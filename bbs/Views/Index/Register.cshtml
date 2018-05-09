@@ -1,0 +1,50 @@
+﻿
+@{
+    ViewData["Title"] = "Register";
+}
+<div class="msgbox login">
+    <img src="~/images/logo.jpg" class="login-logo"></img>
+    <p>BBS - ViewData["Title"]</p>
+    <form id="post" class="ipt">
+        <input name="email" class="ipt-account" type="text" placeholder="注册邮箱">
+        <p style="font-size: 12px;margin-top: 8px;">请输入注册的邮箱账号,系统将会发送一封邮件到你的邮箱进行下一步操作</p>
+    </form>
+    <div class="ipt">
+        <button id="reg" class="btn login-btn">注册</button>
+    </div>
+    <div class="ipt ipt-min">
+        <div class="r" style="text-align: right;">
+            @Html.ActionLink("已有账号？", "Login", "Index")
+            <span class="cut"></span>
+            @Html.ActionLink("找回密码", "PwdBack", "Index")
+        </div>
+    </div>
+</div>
+<script>
+$(function () {
+        $('#reg').click(function () {
+            $('#reg').attr('disabled', 'true');
+            $('.error').remove();
+            $.ajax({
+                url: "@Url.Action("Register", "Login")",
+                type: 'get',
+                data: $('#post').serialize(),
+                success: function (json) {
+                    if (json.code != 0) {
+                        $('input[name=email]').after('<span class="iconfont icon-cuowu error">' + json.msg + '</span>');
+                        $('#reg').removeAttr('disabled');
+                    } else {
+                        MessageBox.prompt('邮件已发送到你的邮箱,请注意查收(有效期30分钟)');
+                        setTimeout(function () {
+                            window.location = "__HOME__";
+                        }, 3000);
+                    }
+                },
+                error: function () {
+                    MessageBox.prompt('系统发生了一个错误!', 'warning');
+                    $('#reg').removeAttr('disabled');
+                }
+            });
+        });
+    });
+</script>

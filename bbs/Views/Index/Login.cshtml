@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="msgbox login">
+    <img src="~/images/logo.jpg" class="login-logo"></img>
+    <p>BBS</p>
+    <form id="post" class="ipt">
+        <input class="ipt-account" type="text" name="username" placeholder="邮箱/用户名/用户id">
+        <input class="ipt-account" type="password" name="password" placeholder="密码">
+    </form>
+    <div class="ipt">
+        <button id="login" class="btn login-btn">登录</button>
+    </div>
+    <div class="ipt ipt-min">
+        <div class="r" style="text-align: right;">
+            @Html.ActionLink("立即注册", "Register", "Index")
+            <span class="cut"></span>
+            @Html.ActionLink("找回密码","PwdBack","Index")
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $('#login').click(function () {
+            $('#reg').attr('disabled', 'true');
+            $('.error').remove();
+            $.ajax({
+                url: "@Url.Action("Login","Index")",
+                type: 'get',
+                data: $('#post').serialize(),
+                success: function (json) {
+                    if (json.code != 0) {
+                        switch (json.code) {
+                            case 10001:
+                            case 10002:
+                            case 10003: {
+                                $('input[name=username]').after('<span class="iconfont icon-cuowu error">' + json.msg + '</span>');
+                                break
+                            }
+                            case 10004:
+                            case 10005:
+                            case 10006: {
+                                $('input[name=password]').after('<span class="iconfont icon-cuowu error">' + json.msg + '</span>');
+                                break;
+                            }
+                            case 10020: {
+                                MessageBox.prompt(json.msg, 'warning');
+                                break;
+                            }
+                            default: {
+                                MessageBox.prompt('未知的错误', 'warning');
+                            }
+                        }
+                    } else {
+                        MessageBox.prompt('登录成功,3秒后自动跳转');
+                        setTimeout(function () {
+                            window.location = "__HOME__";
+                        }, 3000);
+                    }
+                },
+                error: function () {
+                    MessageBox.prompt('系统发生了一个错误!', 'warning');
+                    $('#reg').removeAttr('disabled');
+                }
+            });
+        });
+    });
+</script>

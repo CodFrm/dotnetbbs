@@ -1,0 +1,49 @@
+﻿@{ 
+    ViewData["Login"] = false;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>BBS - @ViewData["Title"]</title>
+    <link href="~/css/login.css" rel="stylesheet" />
+    <link href="~/css/index.css" rel="stylesheet" />
+    <link href="~/css/iconfont.css" rel="stylesheet" />
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+    <script src="~/js/index.js"></script>
+</head>
+<body>
+    <div class="header">
+        <div class="left">
+            <img src="~/images/logo.jpg" class="logo">
+            <span class="title">BBS - @ViewData["Title"]</span>
+        </div>
+        <div class="nav">
+            <a href="#" class="nav-item active">首页</a>
+            <a href="#" class="nav-item">板块</a>
+            @if ((bool)ViewData["Login"])
+            {
+                <div class="right nav-item">
+                    <img src="{:_avatar($um['avatar'])}" class="min user-avatar" style="padding:8px;">
+                    <span class="title username">Farmer</span>
+                    <i class="iconfont icon-xia text-top" style="color:#fff"></i>
+                    <div class="u-list">
+                        <span>用户组:</span>
+                        <span>管理员</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a href="{:url('login','index')}" class="right nav-item">登录/注册</a>
+            }
+
+        </div>
+    </div>
+    <div class="main">
+        @RenderBody()
+    </div>
+</body>
+</html> 
