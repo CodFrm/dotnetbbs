@@ -47,7 +47,7 @@ namespace bbs.Lib
         {
             if (_where != "")
             {
-                _where = " " + _operator + " ";
+                _where += " " + _operator + " ";
                 _operator = "and";
             }
             else

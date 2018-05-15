@@ -18,5 +18,17 @@ namespace bbs.Lib
             long timeStamp = (long)(DateTime.Now - startTime).TotalSeconds; // 相差秒数
             return timeStamp.ToString();
         }
+
+        public static string randString(int len, int type = 2)
+        {
+            string randStr = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            string ret = "";
+            Random r = new Random();
+            for (int i = 0; i < len; i++)
+            {
+                ret += randStr.Substring(r.Next(10 + type * 26), 1);
+            }
+            return ret;
+        }
     }
 }

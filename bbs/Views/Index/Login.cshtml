@@ -26,7 +26,7 @@
             $('#reg').attr('disabled', 'true');
             $('.error').remove();
             $.ajax({
-                url: "@Url.Action("Login","Index")",
+                url: "@Url.Action("Login","Login")",
                 type: 'get',
                 data: $('#post').serialize(),
                 success: function (json) {
@@ -55,7 +55,7 @@
                     } else {
                         MessageBox.prompt('登录成功,3秒后自动跳转');
                         setTimeout(function () {
-                            window.location = "__HOME__";
+                            window.location = "";
                         }, 3000);
                     }
                 },

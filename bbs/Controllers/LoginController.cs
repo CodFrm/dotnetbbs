@@ -12,9 +12,20 @@ namespace bbs.Controllers
 {
     public class LoginController : Controller
     {
-        public IActionResult Login()
+        public JsonResult Login(string username, string password)
         {
-            return View();
+            var data = Db.table("user").where("username", username)._or().where("uid", username).find();
+            if (data.HasRows)
+            {
+                data.Read();
+                if (data[2].ToString() == password)
+                {
+                    HttpContext.Response.Cookies.Append("token",TokenModel.createToken((int)data[0]));
+                    return Json(new ErrorJsonModel(0, "success"));
+                }
+                return Json(new ErrorJsonModel(10005, "密码不正确"));
+            }
+            return Json(new ErrorJsonModel(10001, "不存在的用户"));
         }
 
         public JsonResult Register(string user, string passwd, string confirm)
@@ -28,10 +39,10 @@ namespace bbs.Controllers
             var a = TryValidateModel(m);
             if (ModelState.IsValid)
             {
-                var data = Db.table("user").where("username", user).find();
+                var data = Db.table("user").where("username", user)._or().where("uid", user).find();
                 if (data.HasRows)
                 {
-                    return Json(new ErrorJsonModel(-1,"用户名存在"));
+                    return Json(new ErrorJsonModel(-1, "用户名存在"));
                 }
                 var userData = new Dictionary<string, object>();
                 userData.Add("username", user);
