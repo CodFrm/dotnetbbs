@@ -8,42 +8,34 @@ namespace bbs.Lib
 {
     public class Db
     {
-        protected static MySqlConnection sqlConnection = null;
+        protected MySqlConnection sqlConnection = null;
         protected MySqlCommand sqlCommand;
+
+        public static string _fix = "bbs_";
+
         public String _table = "";
         public String _where = "";
         public String _operator = "and";
         public String _limit = "";
         public String _order = "";
 
-        public static MySqlDataReader sqlDataReader = null;
-        public static MySqlCommand mySqlCommand = null;
-
         public Db(String table)
         {
-            if (sqlConnection == null)
-            {
-                initConnect();
-            }
-            if (mySqlCommand != null)
-            {
-                mySqlCommand.Clone();
-            }
+            initConnect();
             sqlCommand = new MySqlCommand("", sqlConnection);
-            mySqlCommand = sqlCommand;
             sqlCommand.Parameters.Clear();
             _table = table;
         }
 
-        public static void initConnect()
+        public void initConnect()
         {
-            sqlConnection = new MySqlConnection("server=localhost;port=3306;database=test;user=root;password=;sslmode=none");
+            sqlConnection = new MySqlConnection("server=localhost;port=3306;database=bbs;user=root;password=;sslmode=none;");
             sqlConnection.Open();
         }
 
         public static Db table(String table)
         {
-            return new Db(table);
+            return new Db(_fix + table);
         }
 
         public void initMember()
@@ -93,7 +85,6 @@ namespace bbs.Lib
         {
             sqlCommand.CommandText = "select * from " + _table + " " + _where + " limit 1";
             MySqlDataReader dataReader = sqlCommand.ExecuteReader();
-            sqlDataReader = dataReader;
             initMember();
             return dataReader;
         }
@@ -102,7 +93,6 @@ namespace bbs.Lib
         {
             sqlCommand.CommandText = "select * from " + _table + " " + _where + " " + _order + " " + _limit;
             MySqlDataReader dataReader = sqlCommand.ExecuteReader();
-            sqlDataReader = dataReader;
             initMember();
             return dataReader;
         }
@@ -147,10 +137,10 @@ namespace bbs.Lib
             foreach (var key in valuePairs)
             {
                 sqlCommand.CommandText += "`" + key.Key + "`=@" + key.Key + "u,";
-                sqlCommand.Parameters.Add(new MySqlParameter("@" + key.Key+"u", key.Value));
+                sqlCommand.Parameters.Add(new MySqlParameter("@" + key.Key + "u", key.Value));
             }
             sqlCommand.CommandText = sqlCommand.CommandText.Substring(0, sqlCommand.CommandText.Length - 1);
-            sqlCommand.CommandText += " "+_where;
+            sqlCommand.CommandText += " " + _where;
             int number = sqlCommand.ExecuteNonQuery();
             initMember();
             return number;

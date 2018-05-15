@@ -17,22 +17,20 @@ namespace bbs
     {
         public static void Main(string[] args)
         {
-            Db.initConnect();
-            MySqlDataReader reader = Db.table("jx_token").where("uid","1").select();
-            String text = "";
-            while (reader.Read())
-            {
-                text += reader.GetValue(1).ToString();
-            }
-            Dictionary<String, object> data = new Dictionary<String, object>();
-            data.Add("uid",233);
-            data.Add("token","wdqweq");
-            data.Add("time",13432);
-            reader.Close();
-            //Db.table("jx_token").insert(data);
-
-            Db.table("jx_token").where("uid",233).update(data);
-
+            //Db.initConnect();
+            //MySqlDataReader reader = Db.table("jx_token").where("uid","1").select();
+            //String text = "";
+            //while (reader.Read())
+            //{
+            //    text += reader.GetValue(1).ToString();
+            //}
+            //Dictionary<String, object> data = new Dictionary<String, object>();
+            //data.Add("uid",233);
+            //data.Add("token","wdqweq");
+            //data.Add("time",13432);
+            //reader.Close();
+            ////Db.table("jx_token").insert(data);
+            //Db.table("jx_token").where("uid",233).update(data);
             BuildWebHost(args).Run();
         }
 
