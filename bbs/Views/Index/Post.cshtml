@@ -1,0 +1,183 @@
+﻿
+@{
+    ViewData["Title"] = "Post";
+}
+
+
+<script src="~/editor.md/js/editormd.js"></script>
+<link rel="stylesheet" href="~/editor.md/css/editormd.css">
+<form action="{:url('post')}" method="post" id="edit" class="msgbox edit" onsubmit="return editPost(this);">
+    <div class="edit-title">
+        <input type="text" class="ipt-box ipt-account" name="title" placeholder="输入标题,开始写文章">
+    </div>
+    <div style="padding:10px;overflow: hidden;">
+        <div id="editormd">
+            <textarea name="md"># test</textarea>
+        </div>
+        <span id="log">状态</span>
+        <input type="file" id="upfile" style="display:none" />
+        <div style="overflow: hidden;padding: 2px;line-height: 35px">
+            <lable>选择分区:</lable>
+            <div id="area">
+
+            </div>
+            <input id="post" type="submit" class="btn" style="height: 35px;float: right;padding: 2px 15px;"
+                   value="发表帖子"></input>
+        </div>
+
+    </div>
+</form>
+<script>
+    areaSelect({value: 0});
+
+    function areaSelect(select) {
+        $.ajax({
+            url: "@Url.Action("Plate","Index")",
+            data: {aid: select.value},
+            success: function (json) {
+                if (json.length > 0) {
+                    var newSelect = $('<select></select>').attr('class', 'ipt-box ipt-account area');
+                    for (var i in json) {
+                        newSelect.append('<option value="' + json[i].pid + '">' + json[i].title + '</option>');
+                    }
+                    newSelect.change(function () {
+                        $(this).nextAll().remove();
+                       //areaSelect(this);
+                    });
+                    $('#area').append(newSelect);
+                    //areaSelect(newSelect[0]);
+                } else {
+                    $(select).attr('name', 'area');
+                }
+            }
+        });
+    }
+
+    $(function () {
+        var editor = editormd("editormd", {
+            width: "100%",
+            height: 660,
+            syncScrolling: "single",
+            path: "/editor.md/lib/",
+            toolbarIcons: function () {
+                return ["undo", "redo", "|", "bold", "del", "italic", "quote", "|", "file", "link",
+                    "image", "code", "reference-link", "|", "h1", "h2", "h3",
+                    "h4", "h5", "h6", "|", "list-ul", "list-ol", "hr", "|", "preview", "watch",
+                    "fullscreen", "clear", "search", "|", "help", "info"
+                ]
+            },
+            toolbarIconsClass: {
+                file: "fa-file" // 指定一个FontAawsome的图标类
+            },
+            lang: {
+                toolbar: {
+                    file: "上传文件"
+                }
+            },
+            toolbarHandlers: {
+                file: function () {
+                    dialog = this.createDialog({
+                        title: '添加文件',
+                        width: 465,
+                        height: 254,
+                        name: "editormd-image-dialog",
+                        content: '<div class="editormd-form"><label>文件地址</label><input type="text" data-url />' +
+                        '<div class="editormd-file-input">' +
+                        '<input type="file" name="editormd-image-file">' +
+                        '<input type="submit" value="本地上传"></div><br/><label>文件说明</label><input type="text" value="" data-alt /><br/><label>文件链接</label><input type="text" value="http://" data-link /><br/></div>',
+                        mask: true,
+                        drag: true,
+                        lockScreen: true,
+                        maskStyle: {
+                            opacity: 0.1,
+                            backgroundColor: '#ffffff'
+                        },
+                        buttons: {
+                            enter: ['确定', function () {
+                                var url = this.find("[data-url]").val();
+                                var alt = this.find("[data-alt]").val();
+                                var link = this.find("[data-link]").val();
+
+                                if (url === "") {
+                                    alert(imageLang.imageURLEmpty);
+                                    return false;
+                                }
+
+                                var altAttr = (alt !== "") ? " \"" + alt + "\"" : "";
+
+                                if (link === "" || link === "http://") {
+                                    cm.replaceSelection("![" + alt + "](" + url + altAttr + ")");
+                                }
+                                else {
+                                    cm.replaceSelection("[![" + alt + "](" + url + altAttr + ")](" + link + altAttr + ")");
+                                }
+
+                                if (alt === "") {
+                                    cm.setCursor(cursor.line, cursor.ch + 2);
+                                }
+
+                                this.hide().lockScreen(false).hideMask();
+
+                                return false;
+                            }],
+
+                            cancel: ['取消', function () {
+                                this.hide().lockScreen(false).hideMask();
+
+                                return false;
+                            }]
+                        }
+                    });
+                    // $('#upfile').click()
+                }
+            },
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL: "@Url.Action("UploadFile","Index")?type=1"
+        });
+
+        setInterval(function () {
+            // console.log(editor.getMarkdown());_
+            // $('#log').text('已经自动保存  ' + new Date().toLocaleTimeString());
+        }, 10000);
+
+        window.editPost = function (form) {
+            $('#post').attr('disabled', 'true');
+            var open = function () {
+                $('#post').removeAttr('disabled');
+            }
+            var md = editor.getMarkdown();
+            if (form.title.value.length > 64 || form.title.value.length < 3) {
+                MessageBox.prompt('标题不能超过64个字符小于3个字符', 'warning').success(open);
+                return false;
+            } else if (md.length <= 16) {
+                MessageBox.prompt('内容太少了,再加一点吧...(16-10000字)', 'warning').success(open);
+                return false;
+            } else if (md.length >= 10000) {
+                MessageBox.prompt('太多了,太多了,受不了(16-10000字)', 'warning').success(open);
+                return false;
+            }
+            $.ajax({
+                url: "@Url.Action("PostArticle","Index")",
+                type: 'post',
+                data: $(form).serialize(),
+                success: function (obj) {
+                    if (obj.code == 0) {
+                        MessageBox.prompt(obj.msg)
+                        setTimeout(function () {
+                            window.location = '__HOME__/t/' + obj.tid + '/1.html';
+                        }, 3000);
+                    } else {
+                        MessageBox.prompt(obj.msg, 'warning')
+                        $('#post').removeAttr('disabled');
+                    }
+                },
+                error: function () {
+                    $('#post').removeAttr('disabled');
+                }
+            });
+            return false;
+        }
+    });
+</script>
+

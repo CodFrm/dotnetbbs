@@ -21,6 +21,7 @@ namespace bbs.Controllers
                 if (data[2].ToString() == password)
                 {
                     HttpContext.Response.Cookies.Append("token",TokenModel.createToken((int)data[0]));
+                    HttpContext.Response.Cookies.Append("uid",data[0].ToString());
                     return Json(new ErrorJsonModel(0, "success"));
                 }
                 return Json(new ErrorJsonModel(10005, "密码不正确"));

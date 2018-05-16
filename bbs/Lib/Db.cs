@@ -27,6 +27,11 @@ namespace bbs.Lib
             _table = table;
         }
 
+        ~Db()
+        {
+            sqlConnection.Close();
+        }
+
         public void initConnect()
         {
             sqlConnection = new MySqlConnection("server=localhost;port=3306;database=bbs;user=root;password=;sslmode=none;");
