@@ -1,6 +1,12 @@
-﻿@{ 
-    ViewData["Login"] = false;
+﻿@using bbs.Lib;
+@{
+    ViewData["Login"] = AuthMiddleware.isLogin;
+    if ((bool)ViewData["Login"])
+    {
+        ViewData["user"] = AuthMiddleware.userMsg[1].ToString();
+    }
 }
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,17 +33,17 @@
             {
                 <div class="right nav-item">
                     <img src="{:_avatar($um['avatar'])}" class="min user-avatar" style="padding:8px;">
-                    <span class="title username">Farmer</span>
+                    <span class="title username">@ViewData["user"]</span>
                     <i class="iconfont icon-xia text-top" style="color:#fff"></i>
-                    <div class="u-list">
-                        <span>用户组:</span>
-                        <span>管理员</span>
-                    </div>
+                    @*<div class="u-list">
+                            <span>用户组:</span>
+                            <span>管理员</span>
+                        </div>*@
                 </div>
             }
             else
             {
-                <a href="@Url.Action("Login","Index")" class="right nav-item">登录/注册</a>
+                <a href="@Url.Action("Login","Home")" class="right nav-item">登录/注册</a>
             }
 
         </div>

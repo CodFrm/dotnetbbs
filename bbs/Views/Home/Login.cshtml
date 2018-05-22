@@ -14,9 +14,9 @@
     </div>
     <div class="ipt ipt-min">
         <div class="r" style="text-align: right;">
-            @Html.ActionLink("立即注册", "Register", "Index")
+            @Html.ActionLink("立即注册", "Register", "Home")
             <span class="cut"></span>
-            @Html.ActionLink("找回密码","PwdBack","Index")
+            @Html.ActionLink("找回密码","PwdBack", "Home")
         </div>
     </div>
 </div>
@@ -55,7 +55,7 @@
                     } else {
                         MessageBox.prompt('登录成功,3秒后自动跳转');
                         setTimeout(function () {
-                            window.location = "";
+                            window.location = "/";
                         }, 3000);
                     }
                 },

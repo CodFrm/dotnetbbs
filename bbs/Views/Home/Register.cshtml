@@ -15,9 +15,9 @@
     </div>
     <div class="ipt ipt-min">
         <div class="r" style="text-align: right;">
-            @Html.ActionLink("已有账号？", "Login", "Index")
+            @Html.ActionLink("已有账号？", "Login", "Home")
             <span class="cut"></span>
-            @Html.ActionLink("找回密码", "PwdBack", "Index")
+            @Html.ActionLink("找回密码", "PwdBack", "Home")
         </div>
     </div>
 </div>
@@ -36,7 +36,7 @@ $(function () {
                         //$('input[name=email]').after('<span class="iconfont icon-cuowu error">' + json.msg + '</span>');
                         $('#reg').removeAttr('disabled');
                     } else {
-                        MessageBox.prompt('邮件已发送到你的邮箱,请注意查收(有效期30分钟)');
+                        MessageBox.prompt('注册成功');
                         setTimeout(function () {
                             window.location = "@Url.Action("Index", "Login")";
                         }, 3000);
