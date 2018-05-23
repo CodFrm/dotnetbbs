@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using bbs.Lib;
 using bbs.Models;
+using bbs.Models.Post;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,19 +29,66 @@ namespace bbs.Controllers
             return View();
         }
 
-        public JsonResult PostArticle()
+        public JsonResult PostArticle(string title, string content, string aid)
         {
+            var m = new PostModel()
+            {
+                title = Functions.FilterXSS(title),
+                content = Functions.FilterXSS(content),
+                aid = aid
+            };
+            TryValidateModel(m);
+            if (ModelState.IsValid)
+            {
+                var area = Db.table("area").where("aid", aid).find();
+                if (!area.HasRows)
+                {
+                    return Json(new ErrorJsonModel(-1, "不存在的分区"));
+                }
+                var postData = new Dictionary<string, object>();
+                postData.Add("post_title", m.title);
+                postData.Add("post_content", m.content);
+                postData.Add("post_aid", aid);
+                postData.Add("post_uid", AuthMiddleware.uid);
+                postData.Add("post_time",Functions.timestamp());
+                postData.Add("post_end_reply_time", Functions.timestamp());
+                postData.Add("post_reply_number", 0);
 
-            return Json(new ErrorJsonModel(-1, "错误"));
+                Db.table("post").insert(postData);
+                return Json(new PostSuccessJson(0, "发帖成功", 0));
+            }
+            return Json(new ErrorJsonModel(-1, Functions.getErrorMsg(ModelState)));
         }
 
-        public JsonResult Plate()
+        public class PostSuccessJson
         {
-            var results = Db.table("plate").select();
+            public int code;
+            public string msg;
+            public int pid;
+            public PostSuccessJson(int code, string msg, int pid)
+            {
+                this.code = code;
+                this.msg = msg;
+                this.pid = pid;
+            }
+        }
+
+        public JsonResult Area(string aid = "-1")
+        {
+            var db = Db.table("area");
+            if (int.Parse(aid) > 0)
+            {
+                db.where("area_father", aid);
+            }
+            else
+            {
+                db.where("area_father", 0);
+            }
+            var results = db.order("area_priority").select();
             var rows = new ArrayList();
             while (results.Read())
             {
-                rows.Add(new PlateRow((int)results.GetValue(0), results.GetValue(1).ToString()));
+                rows.Add(new AreaRow((int)results.GetValue(0), results.GetValue(1).ToString(), results.GetValue(3).ToString()));
             }
             return Json(rows);
         }
@@ -105,14 +153,18 @@ namespace bbs.Controllers
             public string url;
         }
 
-        class PlateRow
+        class AreaRow
         {
-            public PlateRow(int pid, string title)
+            public AreaRow(int aid, string title, string logo)
             {
-                this.pid = pid;
+                this.aid = aid;
+                this.logo = logo;
                 this.title = title;
             }
-            public int pid { get; set; }
+            public int aid { get; set; }
+
+            public string logo { get; set; }
+
             public string title { get; set; }
         }
     }

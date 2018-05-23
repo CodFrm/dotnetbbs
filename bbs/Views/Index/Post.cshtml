@@ -12,7 +12,7 @@
     </div>
     <div style="padding:10px;overflow: hidden;">
         <div id="editormd">
-            <textarea name="md"># test</textarea>
+            <textarea name="content"># test</textarea>
         </div>
         <span id="log">状态</span>
         <input type="file" id="upfile" style="display:none" />
@@ -32,22 +32,22 @@
 
     function areaSelect(select) {
         $.ajax({
-            url: "@Url.Action("Plate","Index")",
+            url: "@Url.Action("Area","Index")",
             data: {aid: select.value},
             success: function (json) {
                 if (json.length > 0) {
-                    var newSelect = $('<select></select>').attr('class', 'ipt-box ipt-account area');
+                    var newSelect = $('<select></select>').attr('class', 'ipt-box ipt-account area').attr('name','aid');
                     for (var i in json) {
-                        newSelect.append('<option value="' + json[i].pid + '">' + json[i].title + '</option>');
+                        newSelect.append('<option value="' + json[i].aid + '">' + json[i].title + '</option>');
                     }
                     newSelect.change(function () {
                         $(this).nextAll().remove();
-                       //areaSelect(this);
+                       areaSelect(this);
                     });
                     $('#area').append(newSelect);
-                    //areaSelect(newSelect[0]);
+                    areaSelect(newSelect[0]);
                 } else {
-                    $(select).attr('name', 'area');
+                    $(select).attr('name', 'aid');
                 }
             }
         });

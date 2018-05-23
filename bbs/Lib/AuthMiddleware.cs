@@ -12,6 +12,7 @@ namespace bbs.Lib
     public class AuthMiddleware
     {
         public static bool isLogin = false;
+        public static int uid;
         public static MySqlDataReader userMsg;
         protected RequestDelegate requestDelegate;
         public AuthMiddleware(RequestDelegate requestDelegate)
@@ -50,6 +51,7 @@ namespace bbs.Lib
                     if (data.HasRows)
                     {
                         isLogin = true;
+                        uid = int.Parse(context.Request.Cookies["uid"].ToString());
                         userMsg.Read();
                     }
                     else
@@ -58,8 +60,6 @@ namespace bbs.Lib
                     }
                 }
             }
-
-
             await requestDelegate.Invoke(context);
         }
     }

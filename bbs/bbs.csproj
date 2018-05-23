@@ -239,7 +239,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\data\file\" />
+    <Folder Include="wwwroot\data\img\file\" />
     <Folder Include="wwwroot\data\img\" />
   </ItemGroup>
 

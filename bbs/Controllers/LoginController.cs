@@ -20,8 +20,8 @@ namespace bbs.Controllers
                 data.Read();
                 if (data[2].ToString() == password)
                 {
-                    HttpContext.Response.Cookies.Append("token",TokenModel.createToken((int)data[0]));
-                    HttpContext.Response.Cookies.Append("uid",data[0].ToString());
+                    HttpContext.Response.Cookies.Append("token", TokenModel.createToken((int)data[0]));
+                    HttpContext.Response.Cookies.Append("uid", data[0].ToString());
                     return Json(new ErrorJsonModel(0, "success"));
                 }
                 return Json(new ErrorJsonModel(10005, "密码不正确"));
@@ -33,11 +33,11 @@ namespace bbs.Controllers
         {
             var m = new RegisterUserModel
             {
-                user = user,
+                user = Functions.FilterXSS(user),
                 passwd = passwd,
                 confirm = confirm
             };
-            var a = TryValidateModel(m);
+            TryValidateModel(m);
             if (ModelState.IsValid)
             {
                 var data = Db.table("user").where("username", user)._or().where("uid", user).find();
@@ -46,29 +46,14 @@ namespace bbs.Controllers
                     return Json(new ErrorJsonModel(-1, "用户名存在"));
                 }
                 var userData = new Dictionary<string, object>();
-                userData.Add("username", user);
+                userData.Add("username", m.user);
                 userData.Add("password", passwd);
                 userData.Add("reg_time", Functions.timestamp());
                 Db.table("user").insert(userData);
                 return Json(new ErrorJsonModel(0, "注册成功"));
-
             }
-            return Json(new ErrorJsonModel(-1, getErrorMsg(ModelState)));
+            return Json(new ErrorJsonModel(-1, Functions.getErrorMsg(ModelState)));
         }
-
-        private string getErrorMsg(ModelStateDictionary modelStateDictionary)
-        {
-            string errorMsg = "";
-            foreach (var key in ModelState.Keys.ToList())
-            {
-                var errors = modelStateDictionary[key].Errors.ToList();
-                if (modelStateDictionary[key].ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
-                {
-                    errorMsg = modelStateDictionary[key].Errors[0].ErrorMessage;
-                    break;
-                }
-            }
-            return errorMsg;
-        }
+    
     }
 }

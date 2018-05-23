@@ -34,7 +34,7 @@ namespace bbs.Lib
 
         public void initConnect()
         {
-            sqlConnection = new MySqlConnection("server=localhost;port=3306;database=bbs;user=root;password=;sslmode=none;");
+            sqlConnection = new MySqlConnection("server=localhost;port=3306;database=bbs;user=root;password=;sslmode=none;charset=utf-8;");
             sqlConnection.Open();
         }
 
@@ -100,6 +100,12 @@ namespace bbs.Lib
             MySqlDataReader dataReader = sqlCommand.ExecuteReader();
             initMember();
             return dataReader;
+        }
+
+        public Db order(string field, string mode = "desc")
+        {
+            _order = "order by " + field + " " + mode;
+            return this;
         }
 
         public Db limit(int n, int m)
