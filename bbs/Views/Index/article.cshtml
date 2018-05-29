@@ -1,0 +1,240 @@
+﻿@using bbs.Lib;
+@using System.Collections;
+@using bbs.Models.Post;
+@{
+    ViewData["Title"] = "Post";
+    var msg = (ResultCollection)ViewData["data"];
+    var arealist = (ArrayList)ViewData["area"];
+    var nowArea = "";
+}
+<div class="bread br">
+    <a href="/" class="iconfont icon-home" title="首页"></a>
+    @for (int i = arealist.Count - 1; i >= 0; i--)
+    {
+        var key = (AreaModel)arealist[i];
+        <i class="iconfont icon-you"></i>
+        <a href="~/area/@key.aid" title="@key.name">@key.name</a>
+    }
+    <i class="iconfont icon-you"></i>
+    <a href="~/post/@msg["pid"]" title="">@msg["post_title"]</a>
+</div>
+<div class="theme br">
+    <div class="sta">
+        <i class="iconfont icon-kan"></i>
+        <span title="查看">1000</span>
+        <i class="iconfont icon-41"></i>
+        <span title="评论">1000</span>
+    </div>
+    <a href="#" class="theme-title">【@(((AreaModel)arealist[0]).name)】</a>
+    <a href="#" class="theme-title">@msg["post_title"]</a>
+</div>
+<div class="c-list br">
+    <div class="comment">
+        <div class="u">
+            <div class="um">
+                <a href="#" class="un box">Farmer</a>
+                <a href="#">
+                    <img src="~/images/logo.jpg" alt="" class="avatar box">
+                </a>
+                <span class="umg">
+                    用户组:
+                    <a href="#">管理员</a>
+                </span>
+            </div>
+            <div class="tl">
+                <div class="box">
+                    <span class="top">主题</span>
+                    <span class="number">1</span>
+                </div>
+                <div class="box">
+                    <span class="top">回复</span>
+                    <span class="number">1</span>
+                </div>
+                <div class="box">
+                    <span class="top">关注</span>
+                    <span class="number">10000</span>
+                </div>
+            </div>
+            <div class="act">
+                <a href="#" class="gh btn">去Ta主页</a>
+                <a href="#" class="gz btn">关注</a>
+                <a href="#" class="sm btn">私信</a>
+            </div>
+        </div>
+        <div class="cnt">
+            <div class="top">
+                <span class="time">发表时间:2018-2-2 14:21:12</span>
+                <a href="#" class="only">只看该作者</a>
+                <span class="l">#楼主</span>
+            </div>
+            <div class="spk">
+                1
+                <br>1
+                <br>1
+                <br> 1
+            </div>
+            <div class="botm">
+                <button class="btn hf right">回复</button>
+            </div>
+        </div>
+    </div>
+    <div class="comment">
+        <div class="u">
+            <div class="um">
+                <a href="#" class="un box">Farmer</a>
+                <a href="#">
+                    <img src="~/images/logo.jpg" alt="" class="avatar box">
+                </a>
+                <span class="umg">
+                    用户组:
+                    <a href="#">管理员</a>
+                </span>
+            </div>
+            <div class="tl">
+                <div class="box">
+                    <span class="top">主题</span>
+                    <span class="number">1</span>
+                </div>
+                <div class="box">
+                    <span class="top">回复</span>
+                    <span class="number">1</span>
+                </div>
+                <div class="box">
+                    <span class="top">关注</span>
+                    <span class="number">10000</span>
+                </div>
+            </div>
+            <div class="act">
+                <a href="#" class="gh btn">去Ta主页</a>
+                <a href="#" class="gz btn">关注</a>
+                <a href="#" class="sm btn">私信</a>
+            </div>
+        </div>
+        <div class="cnt">
+            <div class="top">
+                <span class="time">发表时间:2018-2-2 14:21:12</span>
+                <a href="#" class="only">只看该作者</a>
+                <span class="l">#2楼</span>
+            </div>
+            <div class="spk">
+                1
+                <br>1
+                <br>1
+                <br> 1
+            </div>
+            <div class="botm">
+                <button class="btn hf right">回复</button>
+            </div>
+        </div>
+    </div>
+    <div class="comment">
+        <div class="u">
+            <div class="um">
+                <a href="#" class="un box">Farmer</a>
+                <a href="#">
+                    <img src="~/images/logo.jpg" alt="" class="avatar box">
+                </a>
+                <span class="umg">
+                    用户组:
+                    <a href="#">管理员</a>
+                </span>
+            </div>
+            <div class="tl">
+                <div class="box">
+                    <span class="top">主题</span>
+                    <span class="number">1</span>
+                </div>
+                <div class="box">
+                    <span class="top">回复</span>
+                    <span class="number">1</span>
+                </div>
+                <div class="box">
+                    <span class="top">关注</span>
+                    <span class="number">10000</span>
+                </div>
+            </div>
+            <div class="act">
+                <a href="#" class="gh btn">去Ta主页</a>
+                <a href="#" class="gz btn">关注</a>
+                <a href="#" class="sm btn">私信</a>
+            </div>
+        </div>
+        <div class="cnt">
+            <div class="top">
+                <span class="time">发表时间:2018-2-2 14:21:12</span>
+                <a href="#" class="only">只看该作者</a>
+                <span class="l">#3楼</span>
+            </div>
+            <div class="spk">
+                1
+                <br>1
+                <br>1
+                <br> 1
+            </div>
+            <div class="botm">
+                <button class="btn hf right">回复</button>
+            </div>
+        </div>
+    </div>
+    <div class="comment">
+        <div class="u">
+            <div class="um">
+                <a href="#" class="un box">Farmer</a>
+                <a href="#">
+                    <img src="~/images/logo.jpg" alt="" class="avatar box">
+                </a>
+                <span class="umg">
+                    用户组:
+                    <a href="#">管理员</a>
+                </span>
+            </div>
+            <div class="tl">
+                <div class="box">
+                    <span class="top">主题</span>
+                    <span class="number">1</span>
+                </div>
+                <div class="box">
+                    <span class="top">回复</span>
+                    <span class="number">1</span>
+                </div>
+                <div class="box">
+                    <span class="top">关注</span>
+                    <span class="number">10000</span>
+                </div>
+            </div>
+            <div class="act">
+                <a href="#" class="gh btn">去Ta主页</a>
+                <a href="#" class="gz btn">关注</a>
+                <a href="#" class="sm btn">私信</a>
+            </div>
+        </div>
+        <div class="cnt">
+            <div class="top">
+                <span class="time">发表时间:2018-2-2 14:21:12</span>
+                <a href="#" class="only">只看该作者</a>
+                <span class="l">#4楼</span>
+            </div>
+            <div class="spk">
+                1
+                <br>1
+                <br>1
+                <br> 1
+            </div>
+            <div class="botm">
+                <button class="btn hf right">回复</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pages">
+
+</div>
+<div class="reply">
+    <img src="~/images/logo.jpg" class="avatar user-avatar">
+    <div class="reply-box">
+        巴拉巴拉
+    </div>
+    <div class="act">
+        <button class="btn ht right">回帖</button>
+    </div>
+</div>

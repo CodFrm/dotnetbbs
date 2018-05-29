@@ -13,7 +13,7 @@ namespace bbs.Lib
     {
         public static bool isLogin = false;
         public static int uid;
-        public static MySqlDataReader userMsg;
+        public static ResultCollection userMsg;
         protected RequestDelegate requestDelegate;
         public AuthMiddleware(RequestDelegate requestDelegate)
         {

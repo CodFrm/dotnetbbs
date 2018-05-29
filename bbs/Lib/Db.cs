@@ -8,7 +8,7 @@ namespace bbs.Lib
 {
     public class Db
     {
-        protected MySqlConnection sqlConnection = null;
+        protected static MySqlConnection sqlConnection = null;
         protected MySqlCommand sqlCommand;
 
         public static string _fix = "bbs_";
@@ -18,6 +18,7 @@ namespace bbs.Lib
         public String _operator = "and";
         public String _limit = "";
         public String _order = "";
+        public String _join = "";
 
         public Db(String table)
         {
@@ -30,12 +31,16 @@ namespace bbs.Lib
         ~Db()
         {
             sqlConnection.Close();
+            sqlConnection = null;
         }
 
         public void initConnect()
         {
-            sqlConnection = new MySqlConnection("server=localhost;port=3306;database=bbs;user=root;password=;sslmode=none;charset=utf-8;");
-            sqlConnection.Open();
+            if (sqlConnection == null)
+            {
+                sqlConnection = new MySqlConnection("server=localhost;port=3306;database=bbs;user=root;password=;sslmode=none;charset=utf8;");
+                sqlConnection.Open();
+            }
         }
 
         public static Db table(String table)
@@ -86,20 +91,26 @@ namespace bbs.Lib
             return this;
         }
 
-        public MySqlDataReader find()
+        public ResultCollection find()
         {
-            sqlCommand.CommandText = "select * from " + _table + " " + _where + " limit 1";
-            MySqlDataReader dataReader = sqlCommand.ExecuteReader();
+            sqlCommand.CommandText = "select * from " + _table + " " + _join + " " + _where + " limit 1";
+            ResultCollection dataReader = new ResultCollection(sqlCommand.ExecuteReader());
             initMember();
             return dataReader;
         }
 
-        public MySqlDataReader select()
+        public ResultCollection select()
         {
-            sqlCommand.CommandText = "select * from " + _table + " " + _where + " " + _order + " " + _limit;
-            MySqlDataReader dataReader = sqlCommand.ExecuteReader();
+            sqlCommand.CommandText = "select * from " + _table + " " + _join + " " + _where + " " + _order + " " + _limit;
+            ResultCollection dataReader = new ResultCollection(sqlCommand.ExecuteReader());
             initMember();
             return dataReader;
+        }
+
+        public Db join(string table, string on, string type = "inner")
+        {
+            _join += type + " join " + _fix + table + " on " + on;
+            return this;
         }
 
         public Db order(string field, string mode = "desc")

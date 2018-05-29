@@ -39,7 +39,7 @@ namespace bbs
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseMiddleware<AuthMiddleware>();
-            
+
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {

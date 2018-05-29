@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using MySql.Data.MySqlClient;
 
 namespace bbs.Controllers
 {
@@ -27,6 +28,32 @@ namespace bbs.Controllers
         public IActionResult Post()
         {
             return View();
+        }
+        [Route("/post/{pid}.html")]
+        public IActionResult Post(int pid)
+        {
+            var data = Db.table("post as a").join("user as b", "a.post_uid=b.uid").where("pid", pid).find();
+            if (data.HasRows)
+            {
+                data.Read();
+                ViewData["data"] = data;
+                //递归出分区
+                int aid = int.Parse(data["post_aid"]);
+                var arealist = new ArrayList();
+                while (aid > 0)
+                {
+                    var area = Db.table("area").where("aid", aid).find();
+                    if (area.HasRows)
+                    {
+                        area.Read();
+                        aid = int.Parse(area["area_father"]);
+                        arealist.Add(new AreaModel(aid, area["area_name"]));
+                    }
+                }
+                ViewData["area"] = arealist;
+                return View("Article");
+            }
+            return View("404");
         }
 
         public JsonResult PostArticle(string title, string content, string aid)
@@ -45,15 +72,19 @@ namespace bbs.Controllers
                 {
                     return Json(new ErrorJsonModel(-1, "不存在的分区"));
                 }
+                area.Read();
+                if (int.Parse(area["area_father"]) <= 0)
+                {
+                    return Json(new ErrorJsonModel(-1, "父类分区,不能发帖"));
+                }
                 var postData = new Dictionary<string, object>();
                 postData.Add("post_title", m.title);
                 postData.Add("post_content", m.content);
                 postData.Add("post_aid", aid);
                 postData.Add("post_uid", AuthMiddleware.uid);
-                postData.Add("post_time",Functions.timestamp());
+                postData.Add("post_time", Functions.timestamp());
                 postData.Add("post_end_reply_time", Functions.timestamp());
                 postData.Add("post_reply_number", 0);
-
                 Db.table("post").insert(postData);
                 return Json(new PostSuccessJson(0, "发帖成功", 0));
             }

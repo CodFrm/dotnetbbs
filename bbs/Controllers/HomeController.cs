@@ -9,7 +9,7 @@ using bbs.Lib;
 
 namespace bbs.Controllers
 {
-    public class HomeController : UserLoginController
+    public class HomeController : Controller
     {
 
         public IActionResult Index()
