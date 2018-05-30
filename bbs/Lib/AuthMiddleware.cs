@@ -13,11 +13,12 @@ namespace bbs.Lib
     {
         public static bool isLogin = false;
         public static int uid;
-        public static ResultCollection userMsg;
+        public static ArrayList userMsg;
         protected RequestDelegate requestDelegate;
         public AuthMiddleware(RequestDelegate requestDelegate)
         {
             this.requestDelegate = requestDelegate;
+            userMsg = new ArrayList();
         }
 
         protected string[] _allow = new string[] { "index" };
@@ -39,25 +40,34 @@ namespace bbs.Lib
             }
             else
             {
-                var data = Db.table("user_token").where("token", context.Request.Cookies["token"].ToString()).
-                     where("uid", context.Request.Cookies["uid"].ToString()).find();
-                if (!data.HasRows)
-                {
-                    context.Response.Redirect("/Home/Login");
-                }
-                else
-                {
-                    userMsg = Db.table("user").where("uid", context.Request.Cookies["uid"].ToString()).find();
-                    if (data.HasRows)
+                using (Db db = Db.table("user_token"), db2 = Db.table("user")) {
+                    using (ResultCollection data = db.where("token", context.Request.Cookies["token"].ToString()).
+                         where("uid", context.Request.Cookies["uid"].ToString()).find())
                     {
-                        isLogin = true;
-                        uid = int.Parse(context.Request.Cookies["uid"].ToString());
-                        userMsg.Read();
-                    }
-                    else
-                    {
-                        context.Response.Redirect("/Home/Login");
-                    }
+                        if (!data.HasRows)
+                        {
+                            context.Response.Redirect("/Home/Login");
+                        }
+                        else
+                        {
+                            bool HasRows = data.HasRows;
+                            using (ResultCollection userMsgResult = db2.where("uid", context.Request.Cookies["uid"].ToString()).find())
+                            {
+                                if (HasRows)
+                                {
+                                    isLogin = true;
+                                    uid = int.Parse(context.Request.Cookies["uid"].ToString());
+                                    userMsgResult.Read();
+                                    userMsg.Add(userMsgResult["uid"]);
+                                    userMsg.Add(userMsgResult["username"]);
+                                }
+                                else
+                                {
+                                    context.Response.Redirect("/Home/Login");
+                                }
+                            }
+                        }
+                    }   
                 }
             }
             await requestDelegate.Invoke(context);

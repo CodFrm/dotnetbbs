@@ -6,12 +6,28 @@ using System.Threading.Tasks;
 
 namespace bbs.Lib
 {
-    public class ResultCollection
+    public class ResultCollection : IDisposable
     {
         private MySqlDataReader mySqlDataReader;
         public ResultCollection(MySqlDataReader mySqlDataReader)
         {
             this.mySqlDataReader = mySqlDataReader;
+        }
+
+        ~ResultCollection()
+        {
+            Close();
+        }
+        public void Dispose()
+        {
+            Close();
+        }
+        public void Close()
+        {
+            if (!mySqlDataReader.IsClosed)
+            {
+                mySqlDataReader.Close();
+            }
         }
 
         public string this[string key]
@@ -28,7 +44,7 @@ namespace bbs.Lib
 
         public bool Read()
         {
-           return mySqlDataReader.Read();
+            return mySqlDataReader.Read();
         }
 
         public object GetValue(int i)

@@ -14,17 +14,23 @@ namespace bbs.Controllers
     {
         public JsonResult Login(string username, string password)
         {
-            var data = Db.table("user").where("username", username)._or().where("uid", username).find();
-            if (data.HasRows)
+            using (var db = Db.table("user"))
             {
-                data.Read();
-                if (data[2].ToString() == password)
+                using (var data = Db.table("user").where("username", username)._or().where("uid", username).find())
                 {
-                    HttpContext.Response.Cookies.Append("token", TokenModel.createToken((int)data[0]));
-                    HttpContext.Response.Cookies.Append("uid", data[0].ToString());
-                    return Json(new ErrorJsonModel(0, "success"));
+                    if (data.HasRows)
+                    {
+                        data.Read();
+                        if (data[2].ToString() == password)
+                        {
+                            int uid = (int)data[0];
+                            HttpContext.Response.Cookies.Append("token", TokenModel.createToken(uid));
+                            HttpContext.Response.Cookies.Append("uid", uid.ToString());
+                            return Json(new ErrorJsonModel(0, "success"));
+                        }
+                        return Json(new ErrorJsonModel(10005, "密码不正确"));
+                    }
                 }
-                return Json(new ErrorJsonModel(10005, "密码不正确"));
             }
             return Json(new ErrorJsonModel(10001, "不存在的用户"));
         }
@@ -40,20 +46,25 @@ namespace bbs.Controllers
             TryValidateModel(m);
             if (ModelState.IsValid)
             {
-                var data = Db.table("user").where("username", user)._or().where("uid", user).find();
-                if (data.HasRows)
+                using (Db db = Db.table("user"),db1=Db.table("user"))
                 {
-                    return Json(new ErrorJsonModel(-1, "用户名存在"));
+                    using (var data = db.where("username", user)._or().where("uid", user).find())
+                    {
+                        if (data.HasRows)
+                        {
+                            return Json(new ErrorJsonModel(-1, "用户名存在"));
+                        }
+                        var userData = new Dictionary<string, object>();
+                        userData.Add("username", m.user);
+                        userData.Add("password", passwd);
+                        userData.Add("reg_time", Functions.timestamp());
+                        db1.insert(userData);
+                    }
                 }
-                var userData = new Dictionary<string, object>();
-                userData.Add("username", m.user);
-                userData.Add("password", passwd);
-                userData.Add("reg_time", Functions.timestamp());
-                Db.table("user").insert(userData);
                 return Json(new ErrorJsonModel(0, "注册成功"));
             }
             return Json(new ErrorJsonModel(-1, Functions.getErrorMsg(ModelState)));
         }
-    
+
     }
 }

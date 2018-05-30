@@ -32,26 +32,34 @@ namespace bbs.Controllers
         [Route("/post/{pid}.html")]
         public IActionResult Post(int pid)
         {
-            var data = Db.table("post as a").join("user as b", "a.post_uid=b.uid").where("pid", pid).find();
-            if (data.HasRows)
+            using (var db = Db.table("post as a"))
             {
-                data.Read();
-                ViewData["data"] = data;
-                //递归出分区
-                int aid = int.Parse(data["post_aid"]);
-                var arealist = new ArrayList();
-                while (aid > 0)
+                using (var data = db.join("user as b", "a.post_uid=b.uid").where("pid", pid).find())
                 {
-                    var area = Db.table("area").where("aid", aid).find();
-                    if (area.HasRows)
+                    if (data.HasRows)
                     {
-                        area.Read();
-                        aid = int.Parse(area["area_father"]);
-                        arealist.Add(new AreaModel(aid, area["area_name"]));
+                        data.Read();
+                        ViewData["data"] = data;
+                        //递归出分区
+                        int aid = int.Parse(data["post_aid"]);
+                        var arealist = new ArrayList();
+                        while (aid > 0)
+                        {
+                            using (var db1 = Db.table("area"))
+                            {
+                                var area = db1.where("aid", aid).find();
+                                if (area.HasRows)
+                                {
+                                    area.Read();
+                                    aid = int.Parse(area["area_father"]);
+                                    arealist.Add(new AreaModel(aid, area["area_name"]));
+                                }
+                            }
+                        }
+                        ViewData["area"] = arealist;
+                        return View("Article");
                     }
                 }
-                ViewData["area"] = arealist;
-                return View("Article");
             }
             return View("404");
         }
@@ -67,25 +75,28 @@ namespace bbs.Controllers
             TryValidateModel(m);
             if (ModelState.IsValid)
             {
-                var area = Db.table("area").where("aid", aid).find();
-                if (!area.HasRows)
+                using (Db db = Db.table("area"),db1= Db.table("post"))
                 {
-                    return Json(new ErrorJsonModel(-1, "不存在的分区"));
+                    var area = db.where("aid", aid).find();
+                    if (!area.HasRows)
+                    {
+                        return Json(new ErrorJsonModel(-1, "不存在的分区"));
+                    }
+                    area.Read();
+                    if (int.Parse(area["area_father"]) <= 0)
+                    {
+                        return Json(new ErrorJsonModel(-1, "父类分区,不能发帖"));
+                    }
+                    var postData = new Dictionary<string, object>();
+                    postData.Add("post_title", m.title);
+                    postData.Add("post_content", m.content);
+                    postData.Add("post_aid", aid);
+                    postData.Add("post_uid", AuthMiddleware.uid);
+                    postData.Add("post_time", Functions.timestamp());
+                    postData.Add("post_end_reply_time", Functions.timestamp());
+                    postData.Add("post_reply_number", 0);
+                    db1.insert(postData);
                 }
-                area.Read();
-                if (int.Parse(area["area_father"]) <= 0)
-                {
-                    return Json(new ErrorJsonModel(-1, "父类分区,不能发帖"));
-                }
-                var postData = new Dictionary<string, object>();
-                postData.Add("post_title", m.title);
-                postData.Add("post_content", m.content);
-                postData.Add("post_aid", aid);
-                postData.Add("post_uid", AuthMiddleware.uid);
-                postData.Add("post_time", Functions.timestamp());
-                postData.Add("post_end_reply_time", Functions.timestamp());
-                postData.Add("post_reply_number", 0);
-                Db.table("post").insert(postData);
                 return Json(new PostSuccessJson(0, "发帖成功", 0));
             }
             return Json(new ErrorJsonModel(-1, Functions.getErrorMsg(ModelState)));

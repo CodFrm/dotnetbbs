@@ -15,7 +15,10 @@ namespace bbs.Models.User
             valuePairs.Add("token", token);
             valuePairs.Add("uid", uid);
             valuePairs.Add("time", Functions.timestamp());
-            Db.table("user_token").insert(valuePairs);
+            using (var db = Db.table("user_token"))
+            {
+                db.insert(valuePairs);
+            }
             return token;
         }
     }

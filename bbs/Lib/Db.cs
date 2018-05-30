@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace bbs.Lib
 {
-    public class Db
+    public class Db :IDisposable
     {
-        protected static MySqlConnection sqlConnection = null;
+        protected MySqlConnection sqlConnection = null;
         protected MySqlCommand sqlCommand;
 
         public static string _fix = "bbs_";
@@ -28,19 +28,24 @@ namespace bbs.Lib
             _table = table;
         }
 
-        ~Db()
+        public void Dispose()
         {
-            sqlConnection.Close();
-            sqlConnection = null;
+            Close();
         }
 
         public void initConnect()
         {
-            if (sqlConnection == null)
+            sqlConnection = new MySqlConnection("server=localhost;port=3306;database=bbs;user=root;password=;sslmode=none;charset=utf8;");
+            sqlConnection.Open();
+        }
+
+        public void Close()
+        {
+            if (sqlConnection.State == System.Data.ConnectionState.Open)
             {
-                sqlConnection = new MySqlConnection("server=localhost;port=3306;database=bbs;user=root;password=;sslmode=none;charset=utf8;");
-                sqlConnection.Open();
+                sqlConnection.Close();
             }
+            sqlConnection = null;
         }
 
         public static Db table(String table)
