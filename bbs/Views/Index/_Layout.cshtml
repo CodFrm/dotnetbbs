@@ -1,14 +1,4 @@
-﻿@using bbs.Lib;
-@{
-    ViewData["Login"] = AuthMiddleware.isLogin;
-    if ((bool)ViewData["Login"])
-    {
-        ViewData["user"] = AuthMiddleware.userMsg[1].ToString();
-    }
-}
-
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,11 +19,11 @@
         <div class="nav">
             <a href="#" class="nav-item active">首页</a>
             <a href="#" class="nav-item">板块</a>
-            @if ((bool)ViewData["Login"])
+            @if ((bool)ViewData["isLogin"])
             {
                 <div class="right nav-item">
                     <img src="~/images/logo.jpg" class="min user-avatar" style="padding:8px;">
-                    <span class="title username">@ViewData["user"]</span>
+                    <span class="title username">@ViewData["username"]</span>
                     <i class="iconfont icon-xia text-top" style="color:#fff"></i>
                     @*<div class="u-list">
                             <span>用户组:</span>

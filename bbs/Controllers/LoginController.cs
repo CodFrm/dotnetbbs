@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using bbs.Lib;
 using bbs.Models;
 using bbs.Models.User;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace bbs.Controllers
 {
-    public class LoginController : Controller
+    public class LoginController : AuthController
     {
         public JsonResult Login(string username, string password)
         {
@@ -46,7 +47,7 @@ namespace bbs.Controllers
             TryValidateModel(m);
             if (ModelState.IsValid)
             {
-                using (Db db = Db.table("user"),db1=Db.table("user"))
+                using (Db db = Db.table("user"), db1 = Db.table("user"))
                 {
                     using (var data = db.where("username", user)._or().where("uid", user).find())
                     {

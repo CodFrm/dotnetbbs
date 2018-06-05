@@ -1,12 +1,12 @@
-﻿@using bbs.Lib;
-@using System.Collections;
+﻿@using System.Collections;
 @using bbs.Models.Post;
 @{
-    ViewData["Title"] = "Post";
-    var msg = (ResultCollection)ViewData["data"];
     var arealist = (ArrayList)ViewData["area"];
     var nowArea = "";
 }
+<script src="~/js/markdown.min.js"></script>
+<script src="~/editor.md/js/editormd.js"></script>
+<link rel="stylesheet" href="~/editor.md/css/editormd.css">
 <div class="bread br">
     <a href="/" class="iconfont icon-home" title="首页"></a>
     @for (int i = arealist.Count - 1; i >= 0; i--)
@@ -16,7 +16,7 @@
         <a href="~/area/@key.aid" title="@key.name">@key.name</a>
     }
     <i class="iconfont icon-you"></i>
-    <a href="~/post/@msg["pid"]" title="">@msg["post_title"]</a>
+    <a href="~/post/@ViewData["pid"]" title="">@ViewData["title"]</a>
 </div>
 <div class="theme br">
     <div class="sta">
@@ -26,13 +26,13 @@
         <span title="评论">1000</span>
     </div>
     <a href="#" class="theme-title">【@(((AreaModel)arealist[0]).name)】</a>
-    <a href="#" class="theme-title">@msg["post_title"]</a>
+    <a href="#" class="theme-title">@ViewData["title"]</a>
 </div>
 <div class="c-list br">
     <div class="comment">
         <div class="u">
             <div class="um">
-                <a href="#" class="un box">Farmer</a>
+                <a href="#" class="un box">@ViewData["username"]</a>
                 <a href="#">
                     <img src="~/images/logo.jpg" alt="" class="avatar box">
                 </a>
@@ -67,12 +67,7 @@
                 <a href="#" class="only">只看该作者</a>
                 <span class="l">#楼主</span>
             </div>
-            <div class="spk">
-                1
-                <br>1
-                <br>1
-                <br> 1
-            </div>
+            <div class="spk">@ViewData["content"]</div>
             <div class="botm">
                 <button class="btn hf right">回复</button>
             </div>
@@ -117,10 +112,8 @@
                 <span class="l">#2楼</span>
             </div>
             <div class="spk">
-                1
-                <br>1
-                <br>1
-                <br> 1
+                # 23333
+                lalalala
             </div>
             <div class="botm">
                 <button class="btn hf right">回复</button>
@@ -231,10 +224,17 @@
 </div>
 <div class="reply">
     <img src="~/images/logo.jpg" class="avatar user-avatar">
-    <div class="reply-box">
-        巴拉巴拉
-    </div>
+    <textarea id="editormd" class="reply-box" placeholder="在这里回复"></textarea>
     <div class="act">
         <button class="btn ht right">回帖</button>
+        <button class="btn ht right">高级回帖</button>
     </div>
 </div>
+
+<script>
+    $(function () {
+        $('.spk').each(function () {
+            this.innerHTML = markdown.toHTML(this.innerHTML);
+        });
+    })
+</script>

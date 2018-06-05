@@ -15,12 +15,12 @@ using MySql.Data.MySqlClient;
 
 namespace bbs.Controllers
 {
-    public class IndexController : Controller
+    public class IndexController : AuthController
     {
         private IHostingEnvironment _hostingEnvironment;
 
 
-        public IndexController(IHostingEnvironment hostingEnvironment)
+        public IndexController(IHostingEnvironment hostingEnvironment) 
         {
             _hostingEnvironment = hostingEnvironment;
         }
@@ -39,7 +39,10 @@ namespace bbs.Controllers
                     if (data.HasRows)
                     {
                         data.Read();
-                        ViewData["data"] = data;
+                        ViewData["title"] = data["post_title"];
+                        ViewData["content"] = data["post_content"];
+                        ViewData["time"] = data["post_time"];
+                        ViewData["pid"] = data["pid"];
                         //递归出分区
                         int aid = int.Parse(data["post_aid"]);
                         var arealist = new ArrayList();
@@ -75,7 +78,7 @@ namespace bbs.Controllers
             TryValidateModel(m);
             if (ModelState.IsValid)
             {
-                using (Db db = Db.table("area"),db1= Db.table("post"))
+                using (Db db = Db.table("area"), db1 = Db.table("post"))
                 {
                     var area = db.where("aid", aid).find();
                     if (!area.HasRows)
@@ -91,13 +94,13 @@ namespace bbs.Controllers
                     postData.Add("post_title", m.title);
                     postData.Add("post_content", m.content);
                     postData.Add("post_aid", aid);
-                    postData.Add("post_uid", AuthMiddleware.uid);
+                    postData.Add("post_uid",ViewData["uid"]);
                     postData.Add("post_time", Functions.timestamp());
                     postData.Add("post_end_reply_time", Functions.timestamp());
                     postData.Add("post_reply_number", 0);
                     db1.insert(postData);
+                    return Json(new PostSuccessJson(0, "发帖成功", db1.lastInsertId()));
                 }
-                return Json(new PostSuccessJson(0, "发帖成功", 0));
             }
             return Json(new ErrorJsonModel(-1, Functions.getErrorMsg(ModelState)));
         }
@@ -106,8 +109,8 @@ namespace bbs.Controllers
         {
             public int code;
             public string msg;
-            public int pid;
-            public PostSuccessJson(int code, string msg, int pid)
+            public long pid;
+            public PostSuccessJson(int code, string msg, long pid)
             {
                 this.code = code;
                 this.msg = msg;

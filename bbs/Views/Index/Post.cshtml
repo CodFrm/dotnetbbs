@@ -1,9 +1,6 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Post";
 }
-
-
 <script src="~/editor.md/js/editormd.js"></script>
 <link rel="stylesheet" href="~/editor.md/css/editormd.css">
 <form action="{:url('post')}" method="post" id="edit" class="msgbox edit" onsubmit="return editPost(this);">
@@ -45,6 +42,7 @@
                        areaSelect(this);
                     });
                     $('#area').append(newSelect);
+                    $(newSelect[0]).removeAttr('name');
                     areaSelect(newSelect[0]);
                 } else {
                     $(select).attr('name', 'aid');
@@ -165,7 +163,7 @@
                     if (obj.code == 0) {
                         MessageBox.prompt(obj.msg)
                         setTimeout(function () {
-                            window.location = '__HOME__/t/' + obj.tid + '/1.html';
+                            window.location = "@Url.Action("Post","Index",new { pid= "-pid-"})".replace("-pid-",obj.pid);
                         }, 3000);
                     } else {
                         MessageBox.prompt(obj.msg, 'warning')

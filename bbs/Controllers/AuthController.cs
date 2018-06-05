@@ -1,76 +1,76 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using bbs.Lib;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MySql.Data.MySqlClient;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace bbs.Lib
+namespace bbs.Controllers
 {
-    public class AuthMiddleware
+    public class AuthController: Controller
     {
         public bool isLogin = false;
         public int uid;
         public ArrayList userMsg;
-        protected RequestDelegate requestDelegate;
-        public AuthMiddleware(RequestDelegate requestDelegate)
-        {
-            this.requestDelegate = requestDelegate;
-            userMsg = new ArrayList();
-        }
-
         protected string[] _allow = new string[] { "index" };
 
-        public async Task Invoke(HttpContext context)
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var path = context.Request.Path.ToString();
+            userMsg = new ArrayList();
+            var path = Request.Path.ToString();
             int pos = path.IndexOf("/", 1);
             if (pos > 0)
             {
                 path = path.Substring(1, pos - 1).ToLower();
             }
-            if ((context.Request.Cookies["token"] == null || context.Request.Cookies["uid"] == null))
+            if ((Request.Cookies["token"] == null || Request.Cookies["uid"] == null))
             {
                 if (((IList)_allow).Contains(path))
                 {
-                    context.Response.Redirect("/Home/Login");
+                    Response.Redirect("/Home/Login");
                 }
             }
             else
             {
-                using (Db db = Db.table("user_token"), db2 = Db.table("user")) {
-                    using (ResultCollection data = db.where("token", context.Request.Cookies["token"].ToString()).
-                         where("uid", context.Request.Cookies["uid"].ToString()).find())
+                using (Db db = Db.table("user_token"), db2 = Db.table("user"))
+                {
+                    using (ResultCollection data = db.where("token", Request.Cookies["token"].ToString()).
+                         where("uid", Request.Cookies["uid"].ToString()).find())
                     {
                         if (!data.HasRows)
                         {
-                            context.Response.Redirect("/Home/Login");
+                            Response.Redirect("/Home/Login");
                         }
                         else
                         {
                             bool HasRows = data.HasRows;
-                            using (ResultCollection userMsgResult = db2.where("uid", context.Request.Cookies["uid"].ToString()).find())
+                            using (ResultCollection userMsgResult = db2.where("uid", Request.Cookies["uid"].ToString()).find())
                             {
                                 if (HasRows)
                                 {
                                     isLogin = true;
-                                    uid = int.Parse(context.Request.Cookies["uid"].ToString());
+                                    uid = int.Parse(Request.Cookies["uid"].ToString());
                                     userMsgResult.Read();
                                     userMsg.Add(userMsgResult["uid"]);
                                     userMsg.Add(userMsgResult["username"]);
+                                    ViewData["usermsg"] = userMsg;
+                                    ViewData["uid"] = uid;
+                                    ViewData["username"] = userMsgResult["username"];
                                 }
                                 else
                                 {
-                                    context.Response.Redirect("/Home/Login");
+                                    Response.Redirect("/Home/Login");
                                 }
                             }
                         }
-                    }   
+                    }
                 }
             }
-            await requestDelegate.Invoke(context);
+            ViewData["isLogin"] = isLogin;
+            
         }
     }
 }

@@ -10,6 +10,7 @@ namespace bbs.Lib
     {
         protected MySqlConnection sqlConnection = null;
         protected MySqlCommand sqlCommand;
+        protected long lastId;
 
         public static string _fix = "bbs_";
 
@@ -19,6 +20,7 @@ namespace bbs.Lib
         public String _limit = "";
         public String _order = "";
         public String _join = "";
+
 
         public Db(String table)
         {
@@ -154,7 +156,13 @@ namespace bbs.Lib
             sqlCommand.CommandText += "values(" + val + ")";
             int number = sqlCommand.ExecuteNonQuery();
             initMember();
+            lastId = sqlCommand.LastInsertedId;
             return number;
+        }
+
+        public long lastInsertId()
+        {
+            return lastId;
         }
 
         public int update(Dictionary<String, object> valuePairs)

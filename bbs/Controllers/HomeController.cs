@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using bbs.Models;
 using bbs.Lib;
+using Microsoft.AspNetCore.Http;
 
 namespace bbs.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : AuthController
     {
-
         public IActionResult Index()
         {
             return View();
