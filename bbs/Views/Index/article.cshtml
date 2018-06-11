@@ -226,7 +226,7 @@
     <img src="~/images/logo.jpg" class="avatar user-avatar">
     <textarea id="editormd" class="reply-box" placeholder="在这里回复"></textarea>
     <div class="act">
-        <button class="btn ht right">回帖</button>
+        <button id="post" class="btn ht right">回帖</button>
         <button class="btn ht right">高级回帖</button>
     </div>
 </div>
@@ -235,6 +235,26 @@
     $(function () {
         $('.spk').each(function () {
             this.innerHTML = markdown.toHTML(this.innerHTML);
+        });
+        $('#post').click(function (btn) {
+            $(btn).attr('disabled',true);
+            $.ajax({
+                url: "@Url.Action("Reply")",
+                method: "post",
+                data: {
+                    pid:　@ViewData["pid"],
+                    content: $('#editormd').val()
+                },
+                complete: function () {
+                    $(btn).attr('disabled', false);
+                }, success: function (obj) {
+                    if (obj.code == 0) {
+                        location.reload();
+                    } else {
+                        alert(obj.msg);
+                    }
+                }
+            });
         });
     })
 </script>

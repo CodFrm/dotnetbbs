@@ -20,7 +20,7 @@ namespace bbs.Controllers
         private IHostingEnvironment _hostingEnvironment;
 
 
-        public IndexController(IHostingEnvironment hostingEnvironment) 
+        public IndexController(IHostingEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
         }
@@ -67,6 +67,38 @@ namespace bbs.Controllers
             return View("404");
         }
 
+        public JsonResult Reply(int pid, string content)
+        {
+            var m = new ReplyMode()
+            {
+                pid = pid,
+                content = Functions.FilterXSS(content)
+            };
+            TryValidateModel(m);
+            if (ModelState.IsValid)
+            {
+                using (Db db = Db.table("reply"), db1 = Db.table("post"))
+                {
+                    using (var data = db1.where("pid", pid).find())
+                    {
+                        if (!data.HasRows)
+                        {
+                            return Json(new ErrorJsonModel(-1, "帖子不存在"));
+                        }
+                        //加入记录
+                        var replyData = new Dictionary<string, object>();
+                        replyData.Add("reply_uid", ViewData["uid"]);
+                        replyData.Add("reply_pid", m.pid);
+                        replyData.Add("reply_content", m.content);
+                        replyData.Add("reply_time", Functions.timestamp());
+                        db.insert(replyData);
+                    }
+                }
+                return Json(new ErrorJsonModel(0, "回帖成功"));
+            }
+            return Json(new ErrorJsonModel(-1, Functions.getErrorMsg(ModelState)));
+        }
+
         public JsonResult PostArticle(string title, string content, string aid)
         {
             var m = new PostModel()
@@ -94,7 +126,7 @@ namespace bbs.Controllers
                     postData.Add("post_title", m.title);
                     postData.Add("post_content", m.content);
                     postData.Add("post_aid", aid);
-                    postData.Add("post_uid",ViewData["uid"]);
+                    postData.Add("post_uid", ViewData["uid"]);
                     postData.Add("post_time", Functions.timestamp());
                     postData.Add("post_end_reply_time", Functions.timestamp());
                     postData.Add("post_reply_number", 0);
