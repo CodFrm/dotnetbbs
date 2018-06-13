@@ -20,7 +20,7 @@ namespace bbs.Lib
         public String _limit = "";
         public String _order = "";
         public String _join = "";
-
+        public String _field = "*";
 
         public Db(String table)
         {
@@ -100,15 +100,22 @@ namespace bbs.Lib
 
         public ResultCollection find()
         {
-            sqlCommand.CommandText = "select * from " + _table + " " + _join + " " + _where + " limit 1";
+            sqlCommand.CommandText = "select "+_field+" from " + _table + " " + _join + " " + _where + " limit 1";
             ResultCollection dataReader = new ResultCollection(sqlCommand.ExecuteReader());
             initMember();
             return dataReader;
         }
+       
+
+        public Db field(String field)
+        {
+            _field = field;
+            return this;
+        }
 
         public ResultCollection select()
         {
-            sqlCommand.CommandText = "select * from " + _table + " " + _join + " " + _where + " " + _order + " " + _limit;
+            sqlCommand.CommandText = "select "+_field+" from " + _table + " " + _join + " " + _where + " " + _order + " " + _limit;
             ResultCollection dataReader = new ResultCollection(sqlCommand.ExecuteReader());
             initMember();
             return dataReader;

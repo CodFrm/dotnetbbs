@@ -850,15 +850,15 @@ ul.article-list {
     height: 140px;
     box-shadow: 0px 0px 1px 1px #69a1e9;
     border-radius: 8px;
-    font-size:18px;
+    font-size: 18px;
     resize: none;
     overflow: auto;
     outline: none;
-    padding:4px;
-    display:block;
+    padding: 4px;
+    display: block;
 }
 
-    /*.reply-box::before {
+/*.reply-box::before {
         content: ' ';
         background: #ffffff;
         position: relative;
@@ -879,3 +879,39 @@ ul.article-list {
     height: 30px;
     width: 60px;
 }
+
+.box-left-shadow {
+    border: 1px solid #c7c7c7;
+    border-left: 6px solid #c7c7c7;
+}
+
+.an {
+    padding: 4px;
+}
+
+    .an pre {
+        margin: 0;
+    }
+
+.posts-table {
+    width: 100%;
+    margin-top: 16px;
+    empty-cells: show;
+    border-collapse: collapse;
+    font-size: 14px;
+    word-wrap: break-word;
+}
+
+    .posts-table td {
+        padding: 4px;
+        border-left: 1px solid #c7c7c7;
+        border-top: 1px solid #c7c7c7;
+    }
+
+        .posts-table td:last-child {
+            border-right: 1px solid #c7c7c7;
+        }
+
+    .posts-table tr:last-child td {
+        border-bottom: 1px solid #c7c7c7;
+    }

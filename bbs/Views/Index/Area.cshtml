@@ -1,0 +1,45 @@
+﻿@using System.Collections;
+@{
+    ViewData["Title"] = "Area";
+    var posts = (ArrayList)ViewData["posts"];
+}
+
+<h3>谈天说地</h3><br />
+<div class="an box-left-shadow">
+    <pre>说明:
+1. 不能发布违规内容
+2. 禁止发公告
+3. ...</pre>
+</div>
+
+<table class="posts-table">
+    <thead>
+        <tr>
+            <td>帖子标题</td>
+            <td>作者</td>
+            <td>发帖时间</td>
+        </tr>
+    </thead>
+    <tr>
+        <td>
+            <a href="#">帖子标题巴拉巴贝拉发</a>
+        </td>
+        <td>farmer</td>
+        <td>2018</td>
+    </tr>
+    <tr>
+        <td>
+            <a href="#">帖子标题巴拉巴贝拉发</a>
+        </td>
+        <td>farmer</td>
+        <td>2018</td>
+    </tr>
+    @foreach (ArrayList item in posts)
+    {
+        <tr>
+            <td><a href="/post/@{@item[0]}.html" target="_blank">@item[2]</a></td>
+            <td>@item[1]</td>
+            <td>@item[3]</td>
+        </tr>
+    }
+</table>

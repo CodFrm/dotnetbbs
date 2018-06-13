@@ -26,5 +26,6 @@ namespace bbs.Controllers
         {
             return View();
         }
+
     }
 }

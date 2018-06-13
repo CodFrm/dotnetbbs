@@ -20,6 +20,14 @@ namespace bbs.Lib
             return timeStamp.ToString();
         }
 
+        public static string time2date(string timestamp)
+        {
+            DateTime dateTimeStart = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+            long lTime = long.Parse(timestamp + "0000000");
+            TimeSpan toNow = new TimeSpan(lTime);
+            return dateTimeStart.Add(toNow).ToString("yyyy年MM月dd日 HH:mm:ss");
+        }
+
         public static string randString(int len, int type = 2)
         {
             string randStr = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

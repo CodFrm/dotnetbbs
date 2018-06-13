@@ -29,6 +29,34 @@ namespace bbs.Controllers
         {
             return View();
         }
+
+
+        [Route("/area/{aid}")]
+        public IActionResult Area(int aid)
+        {
+            using (var db = Db.table("post as a"))
+            {
+                using (var data = db.join("user as b","a.post_uid=b.uid").where("post_aid", aid).select())
+                {
+                    var posts = new ArrayList();
+                    while (data.Read())
+                    {
+                        var tmp = new ArrayList();
+                        tmp.Add(data["pid"]);
+                        tmp.Add(data["username"]);
+                        tmp.Add(data["post_title"]);
+                        tmp.Add(data["post_time"]);
+                        tmp.Add(data["post_title"]);
+                        tmp.Add(data["post_end_reply_time"]);
+                        tmp.Add(data["post_reply_number"]);
+                        posts.Add(tmp);
+                    }
+                    ViewData["posts"] = posts;
+                }
+            }
+            return View();
+        }
+
         [Route("/post/{pid}.html")]
         public IActionResult Post(int pid)
         {
@@ -55,16 +83,37 @@ namespace bbs.Controllers
                                 {
                                     area.Read();
                                     aid = int.Parse(area["area_father"]);
-                                    arealist.Add(new AreaModel(aid, area["area_name"]));
+                                    arealist.Add(new AreaModel(int.Parse(area["aid"]), area["area_name"]));
                                 }
                             }
                         }
                         ViewData["area"] = arealist;
-                        return View("Article");
+                    }
+                    else
+                    {
+                        return View("404");
                     }
                 }
             }
-            return View("404");
+            //读取回复内容
+            using (var db = Db.table("reply as a"))
+            {
+                using (var data = db.join("user as b", "a.reply_uid=b.uid").where("reply_pid", pid).field("a.*,b.username").select())
+                {
+                    ArrayList arrayList = new ArrayList();
+                    while (data.Read())
+                    {
+                        ArrayList msg = new ArrayList();
+                        msg.Add(data["username"]);
+                        msg.Add(data["rid"]);
+                        msg.Add(data["reply_content"]);
+                        msg.Add(data["reply_time"]);
+                        arrayList.Add(msg);
+                    }
+                    ViewData["reply"] = arrayList;
+                }
+            }
+            return View("Article");
         }
 
         public JsonResult Reply(int pid, string content)
