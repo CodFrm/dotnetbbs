@@ -57,6 +57,12 @@ namespace bbs.Controllers
             return View();
         }
 
+        [Route("/area")]
+        public IActionResult Area()
+        {
+            return View();
+        }
+
         [Route("/post/{pid}.html")]
         public IActionResult Post(int pid)
         {

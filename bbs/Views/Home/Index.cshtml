@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Collections;
+@{
     ViewData["Title"] = "Index";
 }
 
@@ -188,67 +189,58 @@
 <div class="right">
     <div class="float-box">
         <div class="msgbox">
-            {if isLogin()}
-            <div class="box-content" style="height:297px">
-                <div class="user">
-                    <img src="{:_avatar($um['avatar'])}" alt="" class="user-avatar">
-                    <div class="user-msg">
-                        <a href="#" class="username">{$um['username']}</a>
-                        <!--<span class="user-group">VIP</span>-->
-                        <span class="user-sign">loli,loli有多好</span>
+            @if ((bool)ViewData["isLogin"])
+            {
+                <div class="box-content" style="height:297px">
+                    <div class="user">
+                        <img src="~/images/logo.jpg" alt="" class="user-avatar">
+                        <div class="user-msg">
+                            <a href="#" class="username">@ViewData["username"]</a>
+                            <!--<span class="user-group">VIP</span>-->
+                            <span class="user-sign">loli,loli有多好</span>
+                        </div>
+                    </div>
+                    <div class="mag-top box-h">我的发表</div>
+                    <ul class="article-list">
+                        @foreach (ArrayList item in (ArrayList)ViewData["myPost"])
+                        {
+                            <li>
+                                <a href="/post/@{@item[0]}.html">@item[1]</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="box-footer">
+                    <div style="padding:10px 4px;text-align: center;">
+                        @*<button class="btn btn-l" style="background: #34D0B6;float:left;">签到</button>*@
+                        <a href="@Url.Action("Post", "Index")" class="btn btn-l" style="background: #d0732e;">发帖</a>
+                        <button class="btn btn-l" style="background: #FFAC40;float:right;">退出</button>
                     </div>
                 </div>
-                <div class="mag-top box-h">我的发表</div>
-                <ul class="article-list">
-                    <li>
-                        <a href="#">啦啦啦啦啦啦啦啦啦啦啦啦啦啦1</a>
-                    </li>
-                    <li>
-                        <a href="#">啦啦啦啦啦啦啦啦啦啦啦啦啦啦2</a>
-                    </li>
-                    <li>
-                        <a href="#">啦啦啦啦啦啦啦啦啦啦啦啦啦啦3</a>
-                    </li>
-                    <li>
-                        <a href="#">啦啦啦啦啦啦啦啦啦啦啦啦啦啦4</a>
-                    </li>
-                    <li>
-                        <a href="#">啦啦啦啦啦啦啦啦啦啦啦啦啦啦3</a>
-                    </li>
-                    <li>
-                        <a href="#">啦啦啦啦啦啦啦啦啦啦啦啦啦啦4</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="box-footer">
-                <div style="padding:10px 4px;text-align: center;">
-                    @*<button class="btn btn-l" style="background: #34D0B6;float:left;">签到</button>*@
-                    <a href="@Url.Action("Post","Index")" class="btn btn-l" style="background: #d0732e;">发帖</a>
-                    <button class="btn btn-l" style="background: #FFAC40;float:right;">退出</button>
-                </div>
-            </div>
-            {else}
-            <div class="box-content" style="height:270px">
-                <div class="user">
-                    <h3 style="font-weight:400">您还没有登录</h3>
-                </div>
-                <div class="mag-top box-h">登录</div>
-                <form class="ipt login-min">
-                    <input class="ipt-account" type="text" name="user" placeholder="邮箱/用户名/用户id">
-                    <input class="ipt-account" type="password" name="user" placeholder="密码">
-                </form>
-                <div class="ipt ipt-min login-min">
-                    <div class="r" style="text-align: right;">
-                        <a href="#">立即注册</a>
-                        <span class="cut"></span>
-                        <a href="#">找回密码</a>
+            }
+            else
+            {
+                <div class="box-content" style="height:270px">
+                    <div class="user">
+                        <h3 style="font-weight:400">您还没有登录</h3>
+                    </div>
+                    <div class="mag-top box-h">登录</div>
+                    <form class="ipt login-min">
+                        <input class="ipt-account" type="text" name="user" placeholder="邮箱/用户名/用户id">
+                        <input class="ipt-account" type="password" name="user" placeholder="密码">
+                    </form>
+                    <div class="ipt ipt-min login-min">
+                        <div class="r" style="text-align: right;">
+                            <a href="#">立即注册</a>
+                            <span class="cut"></span>
+                            <a href="#">找回密码</a>
+                        </div>
+                    </div>
+                    <div class="ipt login-min">
+                        <button class="btn login-btn">登录</button>
                     </div>
                 </div>
-                <div class="ipt login-min">
-                    <button class="btn login-btn">登录</button>
-                </div>
-            </div>
-            {/if}
+            }
         </div>
         <div class="msgbox">
             <div class="box-content search">

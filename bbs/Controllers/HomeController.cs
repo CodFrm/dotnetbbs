@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using bbs.Models;
 using bbs.Lib;
 using Microsoft.AspNetCore.Http;
+using bbs.Models.User;
 
 namespace bbs.Controllers
 {
@@ -14,6 +15,7 @@ namespace bbs.Controllers
     {
         public IActionResult Index()
         {
+            if (isLogin) { ViewData["myPost"] = UserPostsModel.myPostList((int)ViewData["uid"]); }
             return View();
         }
 
