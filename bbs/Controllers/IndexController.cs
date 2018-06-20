@@ -36,7 +36,7 @@ namespace bbs.Controllers
         {
             using (var db = Db.table("post as a"))
             {
-                using (var data = db.join("user as b","a.post_uid=b.uid").where("post_aid", aid).select())
+                using (var data = db.join("user as b", "a.post_uid=b.uid").where("post_aid", aid).select())
                 {
                     var posts = new ArrayList();
                     while (data.Read())
@@ -60,7 +60,30 @@ namespace bbs.Controllers
         [Route("/area")]
         public IActionResult Area()
         {
-            return View();
+            ViewData["area_list"] = TraArea();
+            return View("Area_list");
+        }
+
+        private ArrayList TraArea(int fid = 0)
+        {
+            ArrayList arrayList = new ArrayList();
+
+            using (var db = Db.table("area").where("area_father", fid))
+            {
+                using (var farea = db.select())
+                {
+                    while (farea.Read())
+                    {
+                        area area = new area();
+                        area.name = farea["area_name"];
+                        area.aid = (int)farea.GetValue(0);
+                        area.explain = farea["area_explain"];
+                        area.sun = TraArea(area.aid);
+                        arrayList.Add(area);
+                    }
+                }
+            }
+            return arrayList;
         }
 
         [Route("/post/{pid}.html")]
@@ -73,6 +96,7 @@ namespace bbs.Controllers
                     if (data.HasRows)
                     {
                         data.Read();
+                        ViewData["post_username"] = data["username"];
                         ViewData["title"] = data["post_title"];
                         ViewData["content"] = data["post_content"];
                         ViewData["time"] = data["post_time"];
@@ -299,6 +323,15 @@ namespace bbs.Controllers
 
             public string title { get; set; }
         }
+
+        public class area
+        {
+            public string name;
+            public string explain;
+            public int aid;
+            public ArrayList sun;
+        }
+
     }
 
 }

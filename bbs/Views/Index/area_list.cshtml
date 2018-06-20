@@ -1,0 +1,34 @@
+﻿@using System.Collections;
+@using bbs.Controllers;
+@{
+    ViewData["Title"] = "板块列表";
+    ArrayList list = (ArrayList)ViewData["area_list"];
+}
+
+<h3>板块列表</h3><br />
+<div class="an box-left-shadow">
+    <pre>全局的公告
+1.balablalalalal
+2.不能违规</pre>
+</div>
+<style>
+    .msgbox {
+        margin-top: 10px;
+    }
+</style>
+@foreach (IndexController.area item in list)
+{
+    <div class="msgbox">
+        <div class="box-title">@item.name</div>
+        <div class="box-content">
+            <ul class="article-list plate">
+                @foreach (IndexController.area a in item.sun)
+                {
+                    <li>
+                        <a href="/area/@{@a.aid.ToString()} ">@a.name</a>
+       </li>
+                }
+            </ul>
+        </div>
+    </div>
+}
