@@ -29,7 +29,7 @@
 
     function areaSelect(select) {
         $.ajax({
-            url: "@Url.Action("Area","Index")",
+            url: "/arealist",
             data: {aid: select.value},
             success: function (json) {
                 if (json.length > 0) {

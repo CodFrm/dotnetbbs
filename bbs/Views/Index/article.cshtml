@@ -40,7 +40,7 @@
                 </a>
                 <span class="umg">
                     用户组:
-                    <a href="#">管理员</a>
+                    <a href="#">---</a>
                 </span>
             </div>
             <div class="tl">
@@ -86,7 +86,7 @@
                     </a>
                     <span class="umg">
                         用户组:
-                        <a href="#">管理员</a>
+                        <a href="#">---</a>
                     </span>
                 </div>
                 <div class="tl">
@@ -128,7 +128,14 @@
 </div>
 <div class="reply">
     <img src="~/images/logo.jpg" class="avatar user-avatar">
-    <textarea id="editormd" class="reply-box" placeholder="在这里回复"></textarea>
+    @if ((bool)ViewData["isLogin"])
+    {
+        <textarea id="editormd" class="reply-box" placeholder="在这里回复"></textarea>
+    }
+    else
+    {
+        <pre class="reply-box">请先<a href="@Url.Action("Login","Home")">登录</a>后再回帖</pre>
+    }
     <div class="act">
         <button id="post" class="btn ht right">回帖</button>
         <button class="btn ht right">高级回帖</button>

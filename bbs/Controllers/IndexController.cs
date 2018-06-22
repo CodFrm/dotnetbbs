@@ -54,7 +54,19 @@ namespace bbs.Controllers
                     ViewData["posts"] = posts;
                 }
             }
-            return View();
+            using (var db=Db.table("area"))
+            {
+                using (var data=db.where("aid",aid).find())
+                {
+                    if (data.HasRows)
+                    {
+                        data.Read();
+                        ViewData["name"] = data["area_name"];
+                        ViewData["exp"] = data["area_explain"];
+                    }
+                }
+            }
+                return View();
         }
 
         [Route("/area")]
@@ -63,6 +75,28 @@ namespace bbs.Controllers
             ViewData["area_list"] = TraArea();
             return View("Area_list");
         }
+
+        [Route("/arealist")]
+        public JsonResult Area(string aid = "-1")
+        {
+            var db = Db.table("area");
+            if (int.Parse(aid) > 0)
+            {
+                db.where("area_father", aid);
+            }
+            else
+            {
+                db.where("area_father", 0);
+            }
+            var results = db.order("area_priority").select();
+            var rows = new ArrayList();
+            while (results.Read())
+            {
+                rows.Add(new AreaRow((int)results.GetValue(0), results.GetValue(1).ToString(), results.GetValue(3).ToString()));
+            }
+            return Json(rows);
+        }
+
 
         private ArrayList TraArea(int fid = 0)
         {
@@ -227,26 +261,6 @@ namespace bbs.Controllers
                 this.msg = msg;
                 this.pid = pid;
             }
-        }
-
-        public JsonResult Area(string aid = "-1")
-        {
-            var db = Db.table("area");
-            if (int.Parse(aid) > 0)
-            {
-                db.where("area_father", aid);
-            }
-            else
-            {
-                db.where("area_father", 0);
-            }
-            var results = db.order("area_priority").select();
-            var rows = new ArrayList();
-            while (results.Read())
-            {
-                rows.Add(new AreaRow((int)results.GetValue(0), results.GetValue(1).ToString(), results.GetValue(3).ToString()));
-            }
-            return Json(rows);
         }
 
         [HttpPost]

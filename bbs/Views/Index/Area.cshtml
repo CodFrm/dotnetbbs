@@ -4,12 +4,11 @@
     var posts = (ArrayList)ViewData["posts"];
 }
 
-<h3>谈天说地</h3><br />
+<h3>@{@ViewData["name"]}</h3><br />
 <div class="an box-left-shadow">
-    <pre>说明:
-1. 不能发布违规内容
-2. 禁止发公告
-3. ...</pre>
+<pre>说明:
+@{@ViewData["exp"]}
+</pre>
 </div>
 
 <table class="posts-table">
